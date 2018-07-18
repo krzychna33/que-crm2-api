@@ -8,10 +8,13 @@ const { mongoose } = require('./config/mongoose');
 
 const app = express();
 
+app.set('view engine', 'ejs');
 app.use(bodyParser.json());
+
 
 app.use('/api/v1/users', require('./routes/user'));
 app.use('/api/v1/questionnaires', require('./routes/questionnaire'));
+app.use('/view-questionnaires', require('./routes/questionnaireView'));
 app.use('/api/v1/clients', require('./routes/client'));
 app.use('/api/v1/templates', require('./routes/template'));
 

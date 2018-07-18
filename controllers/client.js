@@ -22,6 +22,11 @@ exports.getClient = (req, res) => {
         traderId: req.user._id,
         _id: clientId
     }).then((docs) => {
+        if(!docs){
+            return res.status(404).send({
+                message: 'Not found!'
+            })
+        }
         res.send({
             message: 'Success',
             data: docs
