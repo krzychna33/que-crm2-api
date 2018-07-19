@@ -16,3 +16,10 @@ header{
 input{
     display: inline-block;
 }
+
+.formField{
+    background-color: #F1F3F0;
+    border-radius: 1%;
+    margin: 20px;
+    padding: 10px;
+}

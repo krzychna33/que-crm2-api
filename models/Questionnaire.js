@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const ObjectId = mongoose.Schema.Types.ObjectId;
+const Mixed = mongoose.Schema.Types.Mixed;
 
 const QuestionnaireSchema = new mongoose.Schema({
     traderId: {
@@ -53,6 +54,10 @@ const QuestionnaireSchema = new mongoose.Schema({
     },
     formFields: [
         {
+            position: {
+                type: Number,
+                required: true
+            },
             HTMLLabel: {
                 type: String,
                 required: true
@@ -65,12 +70,46 @@ const QuestionnaireSchema = new mongoose.Schema({
                 type: String,
                 required: true
             },
-            value: {
+            HTMLValue: {
                 type: String,
+            },
+            HTMLDescription: {
+                type: String
             }
         }
-    ]
+    ],
+    selects: [
+        {
+            position: {
+                type: Number,
+                required: true
+            },
+            HTMLName: {
+                type: String,
+                required: true
+            },
+            HTMLLabel: {
+                type: String,
+                required: true
+            },
+            options: [
+                {
+                    HTMLValue: {
+                        type: String,
+                        required: true
+                    },
+                    HTMLDescription: {
+                        type: String,
+                        required: true
+                    }
+                }
+            ]
+        }
+    ],
+    answers: Array
 });
+
+
 
 const Questionnaire = mongoose.model('Questionnaire', QuestionnaireSchema);
 

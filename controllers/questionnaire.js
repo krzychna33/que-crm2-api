@@ -1,4 +1,5 @@
 const { Questionnaire } = require('../models/Questionnaire');
+const { Client } = require('../models/Client');
 
 exports.getQuestionnaires = (req, res) => {
     Questionnaire.find({
@@ -20,38 +21,54 @@ exports.getQuestionnaires = (req, res) => {
 }
 
 exports.postQuestionnaire = (req, res) => {
-    const questionnaire = new Questionnaire({
-        traderId: req.user._id,
-        clientId: req.body.clientId,
-        styles: {
-            backgroundColor: req.body.styles.backgroundColor ? req.body.styles.backgroundColor : "#FFF",
-            headerColor: req.body.styles.headerColor ? req.body.styles.headerColor : '#000',
-            headerSize: req.body.styles.headerSize ? req.body.styles.headerSize : 36,
-            textColor: req.body.styles.textColor ? req.body.styles.textColor : '#000',
-            textSize: req.body.styles.textSize ? req.body.styles.textSize : '14',
-            buttonsColor: req.body.styles.buttonsColor ? req.body.styles.buttonsColor : '#009BD8'
-        },
-        data: {
-            header: req.body.data.header ? req.body.data.header : 'Another Questionnaire',
-            description: req.body.data.description ? req.body.data.description : 'Here is description for questionnaire.',
-            submitButton: req.body.data.description ? req.body.data.description : 'Apply'
-        },
-        formFields: req.body.formFields
-    });
-
-    questionnaire.save().then((docs) => {
-        res.send({
-            message: 'Questionnaire Created!',
-            data: docs
+    
+    Client.findById(req.body.clientId)
+        .then((docs) =>{
+            if(!docs){
+                return res.status(404).send({
+                    'message': 'Client not found!'
+                })
+            }
+            if(docs.traderId.toString() != req.user._id.toString()){
+                return res.status(401).send({
+                    message: 'This clientid is not associated with your account!'
+                })
+            }
+            const questionnaire = new Questionnaire({
+                traderId: req.user._id,
+                clientId: req.body.clientId,
+                styles: {
+                    backgroundColor: req.body.styles.backgroundColor ? req.body.styles.backgroundColor : "#FFF",
+                    headerColor: req.body.styles.headerColor ? req.body.styles.headerColor : '#000',
+                    headerSize: req.body.styles.headerSize ? req.body.styles.headerSize : 36,
+                    textColor: req.body.styles.textColor ? req.body.styles.textColor : '#000',
+                    textSize: req.body.styles.textSize ? req.body.styles.textSize : '14',
+                    buttonsColor: req.body.styles.buttonsColor ? req.body.styles.buttonsColor : '#009BD8'
+                },
+                data: {
+                    header: req.body.data.header ? req.body.data.header : 'Another Questionnaire',
+                    description: req.body.data.description ? req.body.data.description : 'Here is description for questionnaire.',
+                    submitButton: req.body.data.description ? req.body.data.description : 'Apply'
+                },
+                formFields: req.body.formFields,
+                selects: req.body.selects
+            });
+        
+            questionnaire.save().then((docs) => {
+                res.send({
+                    message: 'Questionnaire Created!',
+                    data: docs
+                })
+            }).catch((e) => {
+                res.status(400).send({
+                    message: e
+                })
+            })
         })
-    }).catch((e) => {
-        res.status(400).send({
-            message: e
-        })
-    })
 }
 
 exports.getQuestionnaire = (req, res) => {
+
     Questionnaire.findOne({
         _id: req.params.id,
         traderId: req.user.id
