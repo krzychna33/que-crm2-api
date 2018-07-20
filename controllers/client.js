@@ -73,6 +73,11 @@ exports.putClient = (req, res) => {
         }, {
             new: true
         }).then((docs) => {
+
+            if(!docs){
+                return res.status(404);
+            }
+            
             res.send({
                 message: 'Success, Client updated!',
                 data: docs
@@ -89,6 +94,10 @@ exports.deleteClient = (req, res) => {
         _id: req.params.id,
         traderId: req.user._id
     }).then((docs) => {
+        if(!docs){
+            return res.status(404);
+        }
+
         res.send({
             message: 'Success, Client deleted!',
             data: docs

@@ -7,26 +7,21 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
-    <link rel="stylesheet" href="/css/styleQuestionnaire.css">
+    <style>
+      .wrapper{
+          width: 70vw;
+          margin-left: auto;
+          margin-right: auto;
+          text-align: center;
+      }
+    </style>
 
     <title>Questionnaire</title>
   </head>
   <body>
       <div class="wrapper">
-        <header>
-          <h1>Another Questionnaire</h1>
-        </header>
-        <div class="description">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent condimentum, nibh eu auctor tristique, nunc justo ullamcorper ante, a placerat magna purus quis purus. Curabitur sit amet dapibus nibh. Suspendisse et nisi lectus. In vulputate sagittis massa eget scelerisque. Nullam nibh metus, feugiat ac maximus ac, malesuada et ipsum. Nullam elementum eros nulla, sed mollis justo sollicitudin in. Mauris viverra a metus et pulvinar. Morbi suscipit ligula eget erat aliquam, sed varius lacus maximus. Vestibulum posuere nulla at aliquet vulputate. Duis sit amet pretium lacus. Nulla nec congue velit. Nam eleifend tellus non mattis imperdiet.
-        </div>
-        <div class="form">
-          <form id="uploadForm" action="/view-questionnaires/" method="POST" encType="multipart/form-data">
-            <% formatedFormFields.forEach((field)=>{ %>
-              <%- field %>
-            <% }) %>
-
-            <input type="submit" value="Apply">
-          </form>
+            <h2>Thank you!</h2>
+            <h1>Questionnaire have been sent!</h1>
         </div>
       </div>
 

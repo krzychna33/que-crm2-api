@@ -106,7 +106,9 @@ const QuestionnaireSchema = new mongoose.Schema({
             ]
         }
     ],
-    answers: Array
+    answers: Array,
+    completed_at: Date,
+    filesArray: Array
 });
 
 

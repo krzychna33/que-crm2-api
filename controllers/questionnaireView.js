@@ -1,4 +1,6 @@
 const { Questionnaire } = require('../models/Questionnaire');
+const { uploadFiles } = require('../services/fileUpload');
+const uuidv4 = require('uuid/v4');
 
 exports.getQuestionnaireView = (req, res) => {
 
@@ -23,9 +25,14 @@ exports.getQuestionnaireView = (req, res) => {
                         fieldOptions += `<option value=${option.HTMLValue}>${option.HTMLDescription}</option>`
                     })
 
-
                     return `<div class="formField"><label>${field.HTMLLabel}</label></br><select name="${field.HTMLName}">${fieldOptions}</select></div>`
                 }
+
+                if(field.HTMLInputType === 'file'){
+                    return `<div class="formField"><label>${field.HTMLLabel}</label></br><input type="${field.HTMLInputType}" name="${field.HTMLName}"/>${field.HTMLDescription ? field.HTMLDescription : ''}</div>`;
+
+                }
+
                 return `<div class="formField"><label>${field.HTMLLabel}</label></br><input type="${field.HTMLInputType}" name="${field.HTMLName}"/>${field.HTMLDescription ? field.HTMLDescription : ''}</div>`;
             });
 
@@ -41,16 +48,12 @@ exports.getQuestionnaireView = (req, res) => {
         })
 };
 
-exports.postQuestionnaireView = (req, res) => {
-    console.log(req.body)
-    console.log(typeof req.body);
-    // {name: "ClientName", value: "krzysiek"}
-    // const keysArray = Object.keys(req.body);
-    // const valuesArray = Object.values(req.body);
-    
+exports.postQuestionnaireView = async (req, res) => {
+    const filesArray = await uploadFiles(req.files)
+
     let answersArray = [];
 
-    for(key in req.body){
+    for (key in req.body) {
         answersArray.push({
             name: key,
             value: req.body[key]
@@ -61,14 +64,18 @@ exports.postQuestionnaireView = (req, res) => {
 
     Questionnaire.findOne({
         _id: req.body.questionnaireId
-    }).then((docs) =>{
+    }).then((docs) => {
         docs.answers = answersArray;
+        docs.filesArray = filesArray;
+        docs.completed_at = new Date();
         docs.save().then((docs) => {
-            return res.send('OK');
-        }).catch((e)=>{
+            return res.render('success');
+        }).catch((e) => {
+            console.log(e);
             res.status(400).send({
                 message: e
             })
         })
     })
 }
+
