@@ -172,3 +172,39 @@ can get from **_POST /api/v1/users/login_**
 **DELETE /api/v1/questionnaires/5b51aa810bf5cf2f548e334d**
 
 **GET /api/v1/questionnaires/get-results/5b51d66397f4a40f5cbc0585**
+
+### 4. Templates
+
+**POST /api/v1/templates**
+
+    {
+    "name": "Default Template",
+    "styles": {
+        "backgroundColor": "#DFEFFD",
+        "headerColor": "#0F1011",
+        "headerSize": 28,
+        "textColor": "#2D3033",
+        "textSize": 18,
+        "buttonsColor": "3433CF"
+        }
+    }
+
+**GET /api/v1/templates**
+
+**GET /api/v1/templates/5b53330ec7474625b48ab6a1**
+
+**PUT /api/v1/templates/5b53330ec7474625b48ab6a1**
+
+    {
+        "name": "A new name!e",
+        "styles": {
+            "backgroundColor": "#DFEFFD",
+            "headerColor": "#0F1011",
+            "headerSize": 28,
+            "textColor": "#2D3033",
+            "textSize": 18,
+            "buttonsColor": "3433CF"
+        }
+    }
+
+**DELETE /api/v1/templates/5b53330ec7474625b48ab6a1**
