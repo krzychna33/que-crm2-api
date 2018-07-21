@@ -16,7 +16,6 @@ exports.createUser = (req, res) => {
             }
         });
     }).catch((e) => {
-        console.log(e);
         res.status(400).send({
             message: e
         });
@@ -64,5 +63,29 @@ exports.logOut = (req, res) =>{
         res.send({
             message: e
         }).status(400);
+    })
+}
+
+exports.deleteUser = (req, res) => {
+    if(req.params.id == req.user._id){
+        return res.status(403).send({
+            message: 'You cant remove your own account!',
+        })
+    }
+
+    User.findOneAndRemove({
+        _id: req.params.id,
+        role: 'trader'
+    }).then((docs) =>{
+        if(!docs){
+            return res.status(404).send();
+        }
+        res.send({
+            message: `Account ${docs.email} deleted!`
+        })
+    }).catch((e) =>{
+        res.status(404).send({
+            message: e
+        })
     })
 }

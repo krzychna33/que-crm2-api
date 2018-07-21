@@ -1,5 +1,6 @@
 const { Questionnaire } = require('../models/Questionnaire');
 const { Client } = require('../models/Client');
+const { Template } = require('../models/Template');
 
 exports.getQuestionnaires = (req, res) => {
     Questionnaire.find({
@@ -20,21 +21,87 @@ exports.getQuestionnaires = (req, res) => {
     })
 }
 
-exports.postQuestionnaire = (req, res) => {
+exports.postQuestionnaire = async (req, res) => {
 
-    Client.findById(req.body.clientId)
-        .then((docs) => {
-            if (!docs) {
-                return res.status(404).send({
-                    'message': 'Client not found!'
+    try {
+
+        const client = await Client.findById(req.body.clientId)
+            .then((docs) =>{
+                if (!docs) {
+                    throw {
+                        message: 'Client not found!',
+                        status: 404
+                    }
+                }
+                if (docs.traderId.toString() != req.user._id.toString()) {
+                    throw {
+                        message: 'This clientid is not associated with your account!',
+                        status: 401
+                    }
+                }
+
+                return docs;
+            }).catch((e) =>{
+                throw {
+                    message: e,
+                    status: 400
+                }
+            });
+            
+        if(req.body.useTemplate){
+            const template = await Template.findOne({
+                _id: req.body.useTemplate
+            }).then((docs) => {
+                if(!docs){
+                    throw {
+                        message: 'Template not found!',
+                        status: 404
+                    }
+                }
+
+                return docs;
+            }).catch((e) =>{
+                throw {
+                    message: e,
+                    status: 400
+                }
+            })
+
+            const questionnaireDocs = await new Questionnaire({
+                traderId: req.user._id,
+                clientId: req.body.clientId,
+                styles: {
+                    backgroundColor: req.body.styles.backgroundColor ? req.body.styles.backgroundColor : template.styles.backgroundColor,
+                    headerColor: req.body.styles.headerColor ? req.body.styles.headerColor : template.styles.headerColor,
+                    headerSize: req.body.styles.headerSize ? req.body.styles.headerSize : template.styles.headerSize,
+                    textColor: req.body.styles.textColor ? req.body.styles.textColor : template.styles.textColor,
+                    textSize: req.body.styles.textSize ? req.body.styles.textSize : template.styles.textSize,
+                    buttonsColor: req.body.styles.buttonsColor ? req.body.styles.buttonsColor : template.styles.buttonsColor
+                },
+                data: {
+                    header: req.body.data.header ? req.body.data.header : 'Another Questionnaire',
+                    description: req.body.data.description ? req.body.data.description : 'Here is description for questionnaire.',
+                    submitButton: req.body.data.description ? req.body.data.description : 'Apply'
+                },
+                formFields: req.body.formFields,
+                selects: req.body.selects
+            });
+
+            const questionnaire = await questionnaireDocs.save()
+                .then((docs) => {
+                    res.send({
+                        message: 'Questionnaire Created!',
+                        data: docs
+                    })
+                }).catch((e) => {
+                    throw {
+                        message: e,
+                        status: 400
+                    }
                 })
-            }
-            if (docs.traderId.toString() != req.user._id.toString()) {
-                return res.status(401).send({
-                    message: 'This clientid is not associated with your account!'
-                })
-            }
-            const questionnaire = new Questionnaire({
+
+        } else {
+            const questionnaireDocs = await new Questionnaire({
                 traderId: req.user._id,
                 clientId: req.body.clientId,
                 styles: {
@@ -54,17 +121,26 @@ exports.postQuestionnaire = (req, res) => {
                 selects: req.body.selects
             });
 
-            questionnaire.save().then((docs) => {
-                res.send({
-                    message: 'Questionnaire Created!',
-                    data: docs
+            const questionnaire = await questionnaireDocs.save()
+                .then((docs) => {
+                    res.send({
+                        message: 'Questionnaire Created!',
+                        data: docs
+                    })
+                }).catch((e) => {
+                    throw {
+                        message: e,
+                        status: 400
+                    }
                 })
-            }).catch((e) => {
-                res.status(400).send({
-                    message: e
-                })
-            })
-        })
+        }
+
+
+        
+    } catch(e) {
+        res.status(e.status ? e.status : 400).send({message: e.message});
+    }
+
 }
 
 exports.getQuestionnaire = (req, res) => {
@@ -133,6 +209,7 @@ exports.putQuestionnaire = async (req, res) => {
             }, {
                 new: true
             }).then((docs) => {
+                
                 res.send({
                     message: 'Questionnaire updated!',
                     data: docs
@@ -180,6 +257,11 @@ exports.getResults = async (req, res) => {
                 }
             }
             return docs;
+        }).catch((e) =>{
+            throw {
+                message: e,
+                status: 400
+            }
         });
 
         const client = await Client.findOne({
@@ -193,6 +275,11 @@ exports.getResults = async (req, res) => {
             }
 
             return docs;
+        }).catch((e) =>{
+            throw {
+                message: e,
+                status: 404
+            }
         })
 
         res.send({

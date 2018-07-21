@@ -10,6 +10,10 @@ exports.getQuestionnaireView = (req, res) => {
                 return res.render('notFound');
             }
 
+            if(docs.answers.length > 0){
+                return res.render('alreadyCompleted');
+            }
+
             const fieldsArray = docs.formFields.concat(docs.selects).sort((a, b) => {
                 return a.position > b.position ? 1 : -1;
             });
@@ -28,6 +32,11 @@ exports.getQuestionnaireView = (req, res) => {
                     return `<div class="formField"><label>${field.HTMLLabel}</label></br><select name="${field.HTMLName}">${fieldOptions}</select></div>`
                 }
 
+                if(field.HTMLInputType === 'checkbox'){
+                    return `<div class="formField"><label>${field.HTMLLabel}</label></br><input type="${field.HTMLInputType}" name="${field.HTMLName}" value="${field.HTMLValue}"/>${field.HTMLDescription ? field.HTMLDescription : ''}</div>`;
+
+                }
+
                 if(field.HTMLInputType === 'file'){
                     return `<div class="formField"><label>${field.HTMLLabel}</label></br><input type="${field.HTMLInputType}" name="${field.HTMLName}"/>${field.HTMLDescription ? field.HTMLDescription : ''}</div>`;
 
@@ -40,7 +49,8 @@ exports.getQuestionnaireView = (req, res) => {
 
             console.log(formatedFormFields)
             res.render('questionnaire', {
-                formatedFormFields
+                formatedFormFields,
+                styles: docs.styles
             })
         }).catch((e) => {
             console.log(e)
@@ -48,23 +58,27 @@ exports.getQuestionnaireView = (req, res) => {
         })
 };
 
-exports.postQuestionnaireView = async (req, res) => {
-    const filesArray = await uploadFiles(req.files)
-
-    let answersArray = [];
-
-    for (key in req.body) {
-        answersArray.push({
-            name: key,
-            value: req.body[key]
-        })
-    }
-
-    console.log(answersArray);
+exports.postQuestionnaireView = (req, res) => {
 
     Questionnaire.findOne({
         _id: req.body.questionnaireId
-    }).then((docs) => {
+    }).then(async (docs) => {
+
+        if(docs.answers.length > 0){
+            return res.render('alreadyCompleted');
+        }
+
+        const filesArray = await uploadFiles(req.files)
+
+        let answersArray = [];
+    
+        for (key in req.body) {
+            answersArray.push({
+                name: key,
+                value: req.body[key]
+            })
+        }
+    
         docs.answers = answersArray;
         docs.filesArray = filesArray;
         docs.completed_at = new Date();

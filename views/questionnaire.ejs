@@ -7,7 +7,46 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
-    <link rel="stylesheet" href="/css/styleQuestionnaire.css">
+    <style>
+      .wrapper{
+        width: 70vw;
+        margin-left: auto;
+        margin-right: auto;
+        background-color: <%- styles.backgroundColor %>;
+        color: <% styles.textColor %>;
+        font-size: <% styles.textSize %>;
+      }
+
+      header{
+        text-align: center;
+        margin: 30px 0 30px 0;
+      }
+
+	    h1 {
+        color: <%- styles.headerColor %>;
+        fontSize: <%- styles.headerSize %>;
+	    }
+
+      .form{
+        margin: 30px 0 30px 0;
+      }
+
+      input{
+        display: inline-block;
+      }
+
+      .formField{
+        background-color: #F1F3F0;
+        border-radius: 1%;
+        margin: 20px;
+        padding: 10px;
+        position: relative;
+      }
+      
+      input[type:submit]{
+        backgroundColor: <%- styles.buttonsColor %>
+      }
+    </style>
 
     <title>Questionnaire</title>
   </head>

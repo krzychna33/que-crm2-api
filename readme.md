@@ -14,6 +14,10 @@
 for authentication please add a header to request: **x-auth** - value for this header you
 can get from **_POST /api/v1/users/login_**
 
+
+**Route for uploaded files:**
+/uploaded-files/{file name from /storage/uploaded}
+
 ### 1. Authentication
 **POST /api/v1/users/login**
 
